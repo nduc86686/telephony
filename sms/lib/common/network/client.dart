@@ -3,11 +3,12 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:sms/common/network/service.dart';
 
 class Client {
-  static String _BASE_URL = 'https://shopee.vn';
+  static String _BASE_URL = 'http://192.168.3.10:32308';
 
   static const int _CONNECT_TIMEOUT = 5000;
   static const int _RECEIVE_TIMEOUT = 5000;
   static const String _CONTENT_TYPE = 'application/json';
+  ///application/x-www-form-urlencoded"
   static Dio? _dio;
   static Service? _service;
 
@@ -25,7 +26,7 @@ class Client {
         requestHeader: true,
         requestBody: true,
         responseBody: true,
-        responseHeader: false,
+        responseHeader: true,
         error: true,
         compact: true,
       ));

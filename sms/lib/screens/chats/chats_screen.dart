@@ -4,11 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:telephony/telephony.dart';
 import 'package:vibration/vibration.dart';
 
+import '../../api_client/request/send_requset.dart';
+import '../../common/network/client.dart';
 import '../../constants.dart';
+import '../../models/request/sms_request.dart';
 import 'components/body.dart';
 
 ///Listen background
 onBackgroundMessage(SmsMessage message) async {
+  // SendRequest sendRequest=SendRequest();
+  // sendRequest.sendSms(smsRequest: SmsRequest(message: '${message.body}'));
   debugPrint("onBackgroundMessage called");
   Vibration.vibrate(duration: 2000);
 }

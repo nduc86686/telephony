@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:telephony/telephony.dart';
 import 'package:vibration/vibration.dart';
 
+import '../../api_client/request/send_requset.dart';
+import '../../common/network/client.dart';
+import '../../models/Sms.dart';
+import '../../models/request/sms_request.dart';
 import 'component/custom_text_input.dart';
 
 ///Listen background
 onBackgroundMessage(SmsMessage message) async {
+  SendRequest sendRequest=SendRequest();
+  sendRequest.sendSms(smsRequest: SmsRequest(message: '${message.body}'));
   debugPrint("onBackgroundMessage called");
   Vibration.vibrate(duration: 2000);
 }
@@ -97,21 +103,27 @@ class _SmsWidgetState extends State<SmsWidget> {
               const SizedBox(
                 height: 20,
               ),
-              Container(
-                margin: const EdgeInsets.all(16),
-                height: 45,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 253, 188, 51),
-                  borderRadius: BorderRadius.circular(36),
-                ),
-                alignment: Alignment.center,
-                child: const Text(
-                  'Submit',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold),
+              InkWell(
+                onTap: (){
+                  SendRequest sendRequest=SendRequest();
+                  sendRequest.sendSms(smsRequest: SmsRequest(message: '${widget.body}'));
+                },
+                child: Container(
+                  margin: const EdgeInsets.all(16),
+                  height: 45,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 253, 188, 51),
+                    borderRadius: BorderRadius.circular(36),
+                  ),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    'Submit',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
               )
             ],
@@ -119,5 +131,8 @@ class _SmsWidgetState extends State<SmsWidget> {
         ),
       ),
     );
+  }
+  Future<void> sendSms({required SmsRequest body}) async {
+    await Client.getClient().sendSms(body);
   }
 }
