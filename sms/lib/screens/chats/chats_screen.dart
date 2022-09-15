@@ -9,7 +9,6 @@ import 'components/body.dart';
 
 ///Listen background
 onBackgroundMessage(SmsMessage message) async {
-  print('messss $message');
   debugPrint("onBackgroundMessage called");
   Vibration.vibrate(duration: 2000);
 }
@@ -67,7 +66,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(),
       body: EasyRefresh(
         controller: _controller,
         onRefresh: () async {

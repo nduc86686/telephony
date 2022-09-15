@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sms/screens/chats/chats_screen.dart';
-import 'package:sms/telephony.dart';
+import 'package:sms/screens/home/home.dart';
 import 'package:sms/theme.dart';
-import 'package:telephony/telephony.dart';
 
 
 
@@ -17,12 +15,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'SMS VIP',
+        title: 'SMS OCEANDEMY',
         debugShowCheckedModeBanner: false,
         theme: lightThemeData(context),
         darkTheme: darkThemeData(context),
-      home: ChatsScreen()
-    );
+        home: const HomeScreen());
   }
 }
 
