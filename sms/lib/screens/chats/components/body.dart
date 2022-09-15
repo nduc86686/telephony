@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:telephony/telephony.dart';
 import '../../../models/Chat.dart';
+import '../../sms/sms.dart';
 import 'chat_card.dart';
 
 class Body extends StatelessWidget {
@@ -21,7 +22,12 @@ class Body extends StatelessWidget {
                 body: "${messages[index].body}",
                 date: "${messages[index].date}",
               ),
-              press: () {},
+              press: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>  SmsWidget(address: '${messages[index].address}',body: '${messages[index].body}',)),
+                );
+              },
             ),
           ),
         ),

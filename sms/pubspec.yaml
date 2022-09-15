@@ -43,6 +43,17 @@ dependencies:
   retrofit: ^3.0.1+1
   pretty_dio_logger: ^1.2.0-beta-1
   flutter_launcher_icons: ^0.10.0
+  flutter_native_splash: ^2.1.6
+
+# flutter_native_splash-development.yaml
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/icon/logo.png
+
+  android_12:
+    image: assets/icon/logo.png
+    icon_background_color: "#ffffff"
+
 
 
 dev_dependencies:

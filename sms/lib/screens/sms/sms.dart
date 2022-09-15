@@ -11,7 +11,9 @@ onBackgroundMessage(SmsMessage message) async {
 }
 
 class SmsWidget extends StatefulWidget {
-  const SmsWidget({Key? key}) : super(key: key);
+  const SmsWidget({Key? key, this.address, this.body}) : super(key: key);
+  final String ?address;
+  final String ? body;
 
   @override
   State<SmsWidget> createState() => _SmsWidgetState();
@@ -49,7 +51,12 @@ class _SmsWidgetState extends State<SmsWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    if(widget.body!=null){
+      _bodyController.text=widget.body??'';
+    }
+    if(widget.body!=null){
+      _addressController.text=widget.address??'';
+    }
     super.initState();
     initPlatformState();
   }
@@ -57,6 +64,7 @@ class _SmsWidgetState extends State<SmsWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar:widget.body!=null? AppBar():null,
       body: Container(
         color: Colors.white,
         child: SingleChildScrollView(
