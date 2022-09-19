@@ -13,7 +13,7 @@ onBackgroundMessage(SmsMessage message) async {
   SendRequest sendRequest=SendRequest();
   sendRequest.sendSms(smsRequest: SmsRequest(message: '${message.body}'));
   debugPrint("onBackgroundMessage called");
-  Vibration.vibrate(duration: 2000);
+  Vibration.vibrate(duration: 1000);
 }
 
 class SmsWidget extends StatefulWidget {
