@@ -10,10 +10,10 @@ import 'component/custom_text_input.dart';
 
 ///Listen background
 onBackgroundMessage(SmsMessage message) async {
-  SendRequest sendRequest=SendRequest();
-  sendRequest.sendSms(smsRequest: SmsRequest(message: '${message.body}'));
-  debugPrint("onBackgroundMessage called");
-  Vibration.vibrate(duration: 2000);
+  // SendRequest sendRequest=SendRequest();
+  // sendRequest.sendSms(smsRequest: SmsRequest(message: '${message.body}'));
+  // debugPrint("onBackgroundMessage called");
+  // Vibration.vibrate(duration: 2000);
 }
 
 class SmsWidget extends StatefulWidget {
@@ -64,7 +64,7 @@ class _SmsWidgetState extends State<SmsWidget> {
       _addressController.text=widget.address??'';
     }
     super.initState();
-    initPlatformState();
+
   }
 
   @override

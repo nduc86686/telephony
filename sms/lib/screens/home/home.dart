@@ -1,8 +1,51 @@
+import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_android/path_provider_android.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:sms/common/extension/contains.dart';
 import 'package:sms/screens/chats/chats_screen.dart';
+import 'package:telephony/telephony.dart';
+import 'package:vibration/vibration.dart';
 
-import '../sms/sms.dart';
+import '../../api_client/request/send_requset.dart';
+import '../../common/network/client.dart';
+import '../../models/data_model.dart';
+import '../../models/request/sms_request.dart';
+import '../list_user/list_user.dart';
+
+// +84980200623
+///Listen background
+onBackgroundMessage(SmsMessage message) async {
+  String? address = message.address;
+  String? phoneNumber = message.serviceCenterAddress!;
+
+  WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isAndroid){
+    PathProviderAndroid.registerWith();
+  }
+  IsolateNameServer.lookupPortByName('main_port')?.send(message);
+  final appDocumentDirectory = await getApplicationDocumentsDirectory();
+  Hive.registerAdapter(DataModelAdapter());
+  Hive.init(appDocumentDirectory.path);
+  await Hive.openBox<DataModel>(dataBoxName);
+  Box<DataModel>? dataBox = Hive.box<DataModel>(dataBoxName);
+  for (int i = 0; i < dataBox.length; i++) {
+    String? addressBox = dataBox.getAt(i)?.name;
+    String? phone = dataBox.getAt(i)?.phone;
+    if (addressBox.containsIgnoreCase(address!) == true ||
+        phone?.replaceFirst("0", "+84") == phoneNumber) {
+      SendRequest sendRequest = SendRequest();
+      sendRequest.sendSms(smsRequest: SmsRequest(message: '${message.body}'));
+      Vibration.vibrate(duration: 2000);
+    }
+  }
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -12,24 +55,59 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<HomeScreen> {
+  Box<DataModel>? dataBox;
+
+  final telephony = Telephony.instance;
+
+  Future<void> initPlatformState() async {
+    final bool? result = await telephony.requestSmsPermissions;
+
+    if (result != null && result) {
+      telephony.listenIncomingSms(
+          onNewMessage: onMessage,
+          onBackgroundMessage: onBackgroundMessage,
+          listenInBackground: true);
+    }
+    if (!mounted) return;
+  }
+
+  onMessage(SmsMessage message) async {
+    String? address = message.address;
+    String? phoneNumber = message.serviceCenterAddress!;
+    dataBox = Hive.box<DataModel>(dataBoxName);
+    for (int i = 0; i < dataBox!.length; i++) {
+      String? addressBox = dataBox?.getAt(i)?.name;
+      String? phone = dataBox?.getAt(i)?.phone;
+      if (addressBox.containsIgnoreCase(address!) == true ||
+          phone == phoneNumber) {
+        SendRequest sendRequest = SendRequest();
+        sendRequest.sendSms(smsRequest: SmsRequest(message: '${message.body}'));
+      }
+    }
+  }
+
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
   static const List<Widget> _widgetOptions = <Widget>[
     ChatsScreen(),
-    SmsWidget()
+    ListUser()
   ];
 
   @override
   void initState() {
     initialization();
     super.initState();
+    initPlatformState();
   }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    dataBox?.close();
+    super.dispose();
+  }
+
   void initialization() async {
-    // This is where you can initialize the resources needed by your app while
-    // the splash screen is displayed.  Remove the following example because
-    // delaying the user experience is a bad design practice!
-    // ignore_for_file: avoid_print
     print('ready in 3...');
     await Future.delayed(const Duration(seconds: 1));
     print('ready in 2...');
@@ -39,36 +117,39 @@ class _MyStatefulWidgetState extends State<HomeScreen> {
     print('go!');
     FlutterNativeSplash.remove();
   }
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SMS OCEANDEMY'),
+        title: const Text('SMS Tracking'),
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu_sharp),
-            label: 'Home',
+      bottomNavigationBar: SalomonBottomBar(
+        currentIndex: _selectedIndex,
+        onTap: (i) => setState(() => _selectedIndex = i),
+        items: [
+          /// Home
+          SalomonBottomBarItem(
+            icon: const Icon(Icons.home),
+            title: const Text("Home"),
+            selectedColor: Colors.purple,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: 'SMS VIP',
+
+          /// Likes
+          SalomonBottomBarItem(
+            icon: const Icon(Icons.list),
+            title: const Text("Danh sách người nhận"),
+            selectedColor: Colors.pink,
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
       ),
     );
+  }
+
+  Future<void> sendSms({required SmsRequest body}) async {
+    await Client.getClient().sendSms(body);
   }
 }

@@ -42,7 +42,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
     );
     getList();
     super.initState();
-    initPlatformState();
   }
 
   getList() async {
