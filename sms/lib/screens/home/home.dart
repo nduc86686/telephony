@@ -29,7 +29,6 @@ onBackgroundMessage(SmsMessage message) async {
   if (Platform.isAndroid){
     PathProviderAndroid.registerWith();
   }
-  IsolateNameServer.lookupPortByName('main_port')?.send(message);
   final appDocumentDirectory = await getApplicationDocumentsDirectory();
   Hive.registerAdapter(DataModelAdapter());
   Hive.init(appDocumentDirectory.path);
@@ -39,7 +38,7 @@ onBackgroundMessage(SmsMessage message) async {
     String? addressBox = dataBox.getAt(i)?.name;
     String? phone = dataBox.getAt(i)?.phone;
     if (addressBox.containsIgnoreCase(address!) == true ||
-        phone?.replaceFirst("0", "+84") == phoneNumber) {
+        phone == phoneNumber) {
       SendRequest sendRequest = SendRequest();
       sendRequest.sendSms(smsRequest: SmsRequest(message: '${message.body}'));
       Vibration.vibrate(duration: 2000);
