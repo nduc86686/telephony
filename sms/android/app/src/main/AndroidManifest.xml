@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="SMS OCEANDEMY"
+        android:label="SMS Tracking"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
        <receiver android:name="com.shounakmulay.telephony.sms.IncomingSmsReceiver"
