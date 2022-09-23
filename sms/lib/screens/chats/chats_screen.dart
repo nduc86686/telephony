@@ -4,19 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:telephony/telephony.dart';
 import 'package:vibration/vibration.dart';
 
-import '../../api_client/request/send_requset.dart';
-import '../../common/network/client.dart';
-import '../../constants.dart';
-import '../../models/request/sms_request.dart';
 import 'components/body.dart';
-
-///Listen background
-onBackgroundMessage(SmsMessage message) async {
-  // SendRequest sendRequest=SendRequest();
-  // sendRequest.sendSms(smsRequest: SmsRequest(message: '${message.body}'));
-  debugPrint("onBackgroundMessage called");
-  Vibration.vibrate(duration: 1000);
-}
 
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({Key? key}) : super(key: key);
@@ -26,11 +14,7 @@ class ChatsScreen extends StatefulWidget {
 }
 
 class _ChatsScreenState extends State<ChatsScreen> {
-  final telephony = Telephony.instance;
-  String _message = "";
-
   List<SmsMessage> messages = [];
-  bool isListenBackground = true;
 
   late EasyRefreshController _controller;
   int _count = 10;
@@ -47,24 +31,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
   getList() async {
     messages = await Telephony.instance.getInboxSms();
     setState(() {});
-  }
-
-  Future<void> initPlatformState() async {
-    final bool? result = await telephony.requestSmsPermissions;
-
-    if (result != null && result) {
-      telephony.listenIncomingSms(
-          onNewMessage: onMessage,
-          onBackgroundMessage: isListenBackground ? onBackgroundMessage : null,
-          listenInBackground: isListenBackground);
-    }
-    if (!mounted) return;
-  }
-
-  onMessage(SmsMessage message) async {
-    setState(() {
-      _message = message.body ?? "Error reading message body.";
-    });
   }
 
   @override
@@ -87,25 +53,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
         header: const ClassicHeader(),
         child: Body(
           messages: messages,
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            isListenBackground = !isListenBackground;
-          });
-          initPlatformState();
-          SnackBar snackBar = SnackBar(
-            content: isListenBackground == true
-                ? const Text('BẬT LẮNG NGHE TIN NHẮN Ở CHẾ ĐỘ NỀN')
-                : const Text('TẮT LẮNG NGHE TIN NHẮN Ở CHẾ ĐỘ NỀN'),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        },
-        backgroundColor: kPrimaryColor,
-        child: const Icon(
-          Icons.ads_click,
-          color: Colors.white,
         ),
       ),
     );
