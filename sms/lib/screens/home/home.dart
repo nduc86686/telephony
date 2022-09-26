@@ -88,8 +88,8 @@ class _MyStatefulWidgetState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    ChatsScreen(),
-    ListUser()
+    ListUser(),
+    ChatsScreen()
   ];
 
   @override
@@ -130,19 +130,18 @@ class _MyStatefulWidgetState extends State<HomeScreen> {
         currentIndex: _selectedIndex,
         onTap: (i) => setState(() => _selectedIndex = i),
         items: [
-          /// Home
+          SalomonBottomBarItem(
+            icon: const Icon(Icons.list),
+            title: const Text("Danh sách người nhận"),
+            selectedColor: Colors.pink,
+          ),
           SalomonBottomBarItem(
             icon: const Icon(Icons.home),
             title: const Text("Home"),
             selectedColor: Colors.purple,
           ),
 
-          /// Likes
-          SalomonBottomBarItem(
-            icon: const Icon(Icons.list),
-            title: const Text("Danh sách người nhận"),
-            selectedColor: Colors.pink,
-          ),
+
         ],
       ),
     );
