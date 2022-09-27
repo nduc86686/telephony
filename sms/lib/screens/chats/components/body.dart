@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:telephony/telephony.dart';
 
+import '../../../common/constant.dart';
 import '../../../models/Chat.dart';
 import '../../../models/data_model.dart';
 import '../../list_user/list_user.dart';
@@ -20,7 +21,7 @@ class _BodyState extends State<Body> {
   Box<DataModel> ? dataBox;
   @override
   void initState() {
-    dataBox = Hive.box<DataModel>(dataBoxName);
+    dataBox = Hive.box<DataModel>(dataBoxNameTake);
     super.initState();
   }
   @override

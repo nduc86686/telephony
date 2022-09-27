@@ -14,15 +14,17 @@ import 'package:telephony/telephony.dart';
 import 'package:vibration/vibration.dart';
 
 import '../../api_client/request/send_requset.dart';
+import '../../common/constant.dart';
 import '../../common/network/client.dart';
 import '../../models/data_model.dart';
 import '../../models/request/sms_request.dart';
+import '../data_response/data_response_screen.dart';
 import '../list_user/list_user.dart';
 
 // +84980200623
 ///Listen background
 onBackgroundMessage(SmsMessage message) async {
-  String? address = message.address;
+  String? address = message.address?.toLowerCase();
   String? phoneNumber = message.serviceCenterAddress!;
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,12 +32,14 @@ onBackgroundMessage(SmsMessage message) async {
     PathProviderAndroid.registerWith();
   }
   final appDocumentDirectory = await getApplicationDocumentsDirectory();
-  Hive.registerAdapter(DataModelAdapter());
+  if (!Hive.isAdapterRegistered(0)) {
+    Hive.registerAdapter(DataModelAdapter());
+  }
   Hive.init(appDocumentDirectory.path);
-  await Hive.openBox<DataModel>(dataBoxName);
-  Box<DataModel>? dataBox = Hive.box<DataModel>(dataBoxName);
+  await Hive.openBox<DataModel>(dataBoxNameTake);
+  Box<DataModel>? dataBox = Hive.box<DataModel>(dataBoxNameTake);
   for (int i = 0; i < dataBox.length; i++) {
-    String? addressBox = dataBox.getAt(i)?.name;
+    String? addressBox = dataBox.getAt(i)?.name?.toLowerCase();
     String? phone = dataBox.getAt(i)?.phone;
     if (addressBox.containsIgnoreCase(address!) == true ||
         phone == phoneNumber) {
@@ -73,7 +77,7 @@ class _MyStatefulWidgetState extends State<HomeScreen> {
   onMessage(SmsMessage message) async {
     String? address = message.address;
     String? phoneNumber = message.serviceCenterAddress!;
-    dataBox = Hive.box<DataModel>(dataBoxName);
+    dataBox = Hive.box<DataModel>(dataBoxNameTake);
     for (int i = 0; i < dataBox!.length; i++) {
       String? addressBox = dataBox?.getAt(i)?.name;
       String? phone = dataBox?.getAt(i)?.phone;
@@ -88,8 +92,10 @@ class _MyStatefulWidgetState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    ListUser(),
-    ChatsScreen()
+    ListUserTakeScreen(),
+    DataResponseScreen(),
+    ChatsScreen(),
+
   ];
 
   @override
@@ -119,30 +125,38 @@ class _MyStatefulWidgetState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('SMS Tracking'),
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: SalomonBottomBar(
-        currentIndex: _selectedIndex,
-        onTap: (i) => setState(() => _selectedIndex = i),
-        items: [
-          SalomonBottomBarItem(
-            icon: const Icon(Icons.list),
-            title: const Text("Danh sách người nhận"),
-            selectedColor: Colors.pink,
-          ),
-          SalomonBottomBarItem(
-            icon: const Icon(Icons.home),
-            title: const Text("Home"),
-            selectedColor: Colors.purple,
-          ),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('SMS Tracking'),
+          backgroundColor: Colors.deepPurple,
+        ),
+        body: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
+        bottomNavigationBar: SalomonBottomBar(
+          currentIndex: _selectedIndex,
+          onTap: (i) => setState(() => _selectedIndex = i),
+          items: [
+            SalomonBottomBarItem(
+              icon: const Icon(Icons.list),
+              title: const Text("Danh sách người nhận"),
+              selectedColor: Colors.purple,
+            ),
+            SalomonBottomBarItem(
+              icon: const Icon(Icons.wechat_outlined),
+              title: const Text("Danh sách đã gửi"),
+              selectedColor: Colors.purple,
+            ),
+            SalomonBottomBarItem(
+              icon: const Icon(Icons.sms),
+              title: const Text("Tin nhắn"),
+              selectedColor: Colors.purple,
+            ),
 
 
-        ],
+          ],
+        ),
       ),
     );
   }

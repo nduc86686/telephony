@@ -4,19 +4,20 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
+import '../../common/constant.dart';
 import '../../models/data_model.dart';
 import '../chats/widget/custom_text_input.dart';
-const String dataBoxName = "data";
 
-class ListUser extends StatefulWidget {
-  const ListUser({Key? key}) : super(key: key);
+
+class ListUserTakeScreen extends StatefulWidget {
+  const ListUserTakeScreen({Key? key}) : super(key: key);
 
   @override
-  State<ListUser> createState() => _ListUserState();
+  State<ListUserTakeScreen> createState() => _ListUserState();
 }
 
 
-class _ListUserState extends State<ListUser> {
+class _ListUserState extends State<ListUserTakeScreen> {
 
   //controller
   final TextEditingController _nameController=TextEditingController();
@@ -27,12 +28,12 @@ class _ListUserState extends State<ListUser> {
 
   //animation
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  // List<int> keys=[];
+
   int counter=0;
 
   @override
   void initState() {
-    dataBox = Hive.box<DataModel>(dataBoxName);
+    dataBox = Hive.box<DataModel>(dataBoxNameTake);
     super.initState();
   }
   @override
@@ -48,17 +49,17 @@ class _ListUserState extends State<ListUser> {
             itemBuilder: (context, index, animation) {
               final int key = keys[index];
               final DataModel? data = items.get(key);
-              return slideIt(context,index,animation,data!); // Refer step 3
+              return slideIt(context,index,animation,data!);
             },
           );
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          _showMyDialog(textTitle: 'Thêm liên hệ nhận tin nhắn',isUpdate: false);
+          _showMyDialog(textTitle: titleDialog,isUpdate: false);
         },
         icon: const Icon(Icons.add),
-        label: const Text("Thêm"),
+        label: const Text(add),
       ),
     );
   }
@@ -102,7 +103,7 @@ class _ListUserState extends State<ListUser> {
                 return [
                   const PopupMenuItem(
                     value: 'edit',
-                    child: Text('Sửa'),
+                    child: Text(edit),
                   ),
                   const PopupMenuItem(
                     value: 'delete',
@@ -112,7 +113,7 @@ class _ListUserState extends State<ListUser> {
               },
               onSelected: (String value){
                 if(value=='edit'){
-                  _showMyDialog(textTitle: 'Sửa liên hệ',isUpdate: true,index: index,name: data.name,phone: data.phone);
+                  _showMyDialog(textTitle: edit1,isUpdate: true,index: index,name: data.name,phone: data.phone);
                 }
                 else{
                   _deleteDialog(index: index,data: data);
@@ -143,7 +144,7 @@ class _ListUserState extends State<ListUser> {
 
               CustomTextInput(
                 textEditController: _nameController,
-                hintTextString: 'Tên liên hệ',
+                hintTextString: nameUser,
                 inputType: InputType.Default,
                 enableBorder: true,
                 themeColor: Theme.of(context).primaryColor,
