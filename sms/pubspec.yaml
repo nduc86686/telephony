@@ -53,20 +53,24 @@ dependencies:
   shared_preferences: ^2.0.15
   path_provider_android: ^2.0.20
   country_phone_code_picker: ^0.0.41
+  shared_preferences_android: 2.0.13
   intl_phone_field: ^3.1.0
   fluttertoast: ^8.0.9
+  restart_app: ^1.1.0
+  empty_widget: ^0.0.5
 
 
 
 # flutter_native_splash-development.yaml
 flutter_native_splash:
   color: "#ffffff"
-  image: assets/icon/logo1.png
+  image: assets/icon/logo.png
+  branding:
 
   android_12:
-    image: assets/icon/logo1.png
+    image: assets/icon/img.png
     icon_background_color: "#ffffff"
-
+    branding:
 
 
 dev_dependencies:

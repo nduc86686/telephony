@@ -20,6 +20,7 @@ import '../../models/data_model.dart';
 import '../../models/request/sms_request.dart';
 import '../data_response/data_response_screen.dart';
 import '../list_user/list_user.dart';
+import '../setting/setting_screen.dart';
 
 // +84980200623
 ///Listen background
@@ -75,18 +76,18 @@ class _MyStatefulWidgetState extends State<HomeScreen> {
   }
 
   onMessage(SmsMessage message) async {
-    String? address = message.address;
-    String? phoneNumber = message.serviceCenterAddress!;
-    dataBox = Hive.box<DataModel>(dataBoxNameTake);
-    for (int i = 0; i < dataBox!.length; i++) {
-      String? addressBox = dataBox?.getAt(i)?.name;
-      String? phone = dataBox?.getAt(i)?.phone;
-      if (addressBox.containsIgnoreCase(address!) == true ||
-          phone == phoneNumber) {
-        SendRequest sendRequest = SendRequest();
-        sendRequest.sendSms(smsRequest: SmsRequest(message: '${message.body}'));
-      }
-    }
+    // String? address = message.address;
+    // String? phoneNumber = message.serviceCenterAddress!;
+    // dataBox = Hive.box<DataModel>(dataBoxNameTake);
+    // for (int i = 0; i < dataBox!.length; i++) {
+    //   String? addressBox = dataBox?.getAt(i)?.name?.toLowerCase();
+    //   String? phone = dataBox?.getAt(i)?.phone;
+    //   if (addressBox.containsIgnoreCase(address!) == true ||
+    //       phone == phoneNumber) {
+    //     SendRequest sendRequest = SendRequest();
+    //     sendRequest.sendSms(smsRequest: SmsRequest(message: '${message.body}'));
+    //   }
+    // }
   }
 
   int _selectedIndex = 0;
@@ -130,6 +131,17 @@ class _MyStatefulWidgetState extends State<HomeScreen> {
         appBar: AppBar(
           title: const Text('SMS Tracking'),
           backgroundColor: Colors.deepPurple,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingScreen()),
+                );
+              },
+            )
+          ],
         ),
         body: Center(
           child: _widgetOptions.elementAt(_selectedIndex),

@@ -2,8 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:sms/common/network/service.dart';
 
+import '../shared_pref.dart';
+
 class Client {
-  static String _BASE_URL = 'http://192.168.3.10:32308';
+  static String BASE_URL = 'http://192.168.3.10:32308';
 
   static const int _CONNECT_TIMEOUT = 5000;
   static const int _RECEIVE_TIMEOUT = 5000;
@@ -13,12 +15,12 @@ class Client {
   static Service? _service;
 
   static Service getClient() {
-    return _service = Service(_configDio());
+    return _service = Service(configDio());
   }
 
-  static Dio _configDio() {
+  static Dio configDio() {
     _dio = Dio(BaseOptions(
-        baseUrl: _BASE_URL,
+        baseUrl: BASE_URL,
         connectTimeout: _CONNECT_TIMEOUT,
         receiveTimeout: _RECEIVE_TIMEOUT,
         contentType: _CONTENT_TYPE))
@@ -33,9 +35,9 @@ class Client {
     return _dio!;
   }
 
-  void setUrl(String? url) {
+  static void setUrl(String? url) {
     if (url != null) {
-      _BASE_URL = url;
+      BASE_URL = url;
     }
   }
 }

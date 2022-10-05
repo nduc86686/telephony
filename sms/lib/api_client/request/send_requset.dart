@@ -1,11 +1,18 @@
+
+
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences_android/shared_preferences_android.dart';
 import 'package:sms/models/Sms.dart';
 import 'package:sms/models/data_response.dart';
 
 import '../../common/constant.dart';
 import '../../common/network/client.dart';
+import '../../common/shared_pref.dart';
 import '../../models/request/sms_request.dart';
 
 
@@ -19,13 +26,20 @@ class SendRequest {
       await Hive.openBox<DataResponse>(dataBoxNameResponse);
       Box<DataResponse>? dataBox =
           Hive.box<DataResponse>(dataBoxNameResponse);
-      final response = await Client.getClient()
-          .sendSms(SmsRequest(message: '${smsRequest.message}'));
-      SmsResponse sms = SmsResponse.fromJson(response.response.data["data"]);
+      if (Platform.isAndroid) {
+        SharedPreferencesAndroid.registerWith();
+      }
+      String baseUrl=await SharedPref.getString('BASE_URL')??Client.BASE_URL;
+      String nameUrl=await SharedPref.getString('NAME_URL')??'/api/otp/parseSms';
+      Client.setUrl(baseUrl);
 
-      // dataBox.add(data);
+      final responses = await Client.configDio().post(nameUrl,data:SmsRequest(message: '${smsRequest.message}') );
+      SmsResponse sms = SmsResponse.fromJson(responses.data["data"]);
+
       if (sms.error != null) {
-        DataResponse data = DataResponse(bank: '',balance:'' ,time:'' ,content: '',error: '${sms.error}');
+        final f = DateFormat('yyyy-MM-dd hh:mm:ss');
+        DataResponse data = DataResponse(bank: '',balance:'' ,time:f.format(DateTime.now()) ,content: '',error: '${sms.error}');
+        print("save to file eror");
         dataBox.add(data);
         Fluttertoast.showToast(
             msg: "${sms.error}",
@@ -51,7 +65,7 @@ class SendRequest {
         );
       }
     }catch(e){
-      print(e);
+      print('error $e');
     }
   }
 }

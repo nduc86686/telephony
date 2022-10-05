@@ -1,5 +1,7 @@
+import 'package:empty_widget/empty_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:sms/models/data_response.dart';
@@ -22,6 +24,7 @@ class _ListUserState extends State<DataResponseScreen> {
 
   // List<int> keys=[];
   int counter = 0;
+  bool isExtended=true;
 
   @override
   void initState() {
@@ -35,28 +38,64 @@ class _ListUserState extends State<DataResponseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffcddbe1),
-      body: ValueListenableBuilder(
-        valueListenable: dataBox!.listenable(),
-        builder: (context, Box<DataResponse> items, _) {
-          List<int> keys = items.keys.cast<int>().toList();
-          return AnimatedList(
-            key: _listKey,
-            initialItemCount: keys.length,
-            itemBuilder: (context, index, animation) {
-              final int key = keys[index];
-              final DataResponse? data = items.get(key);
-              return slideIt(context, index, animation, data!); // Refer step 3
-            },
-          );
+      backgroundColor: Colors.grey.withOpacity(0.1),
+      body:  NotificationListener<UserScrollNotification>(
+        onNotification: (notification){
+          if(notification.direction==ScrollDirection.forward){
+            setState(() {
+              isExtended=true;
+            });
+          }
+          if(notification.direction==ScrollDirection.reverse){
+            setState(() {
+              isExtended=false;
+            });
+          }
+          return true;
         },
+        child: ValueListenableBuilder(
+          valueListenable: dataBox!.listenable(),
+          builder: (context, Box<DataResponse> items, _) {
+            List<int> keys = items.keys.cast<int>().toList();
+            return keys.isNotEmpty?AnimatedList(
+              key: _listKey,
+              initialItemCount: keys.length,
+              itemBuilder: (context, index, animation) {
+                if(keys.isNotEmpty){
+                  final int key = keys[index];
+                  final DataResponse? data = items.get(key);
+                  return slideIt(context, index, animation, data!); // Refer step 3
+                }
+                return Container();
+              },
+            ):Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: EmptyWidget(
+                image: null,
+                packageImage: PackageImage.Image_1,
+                title: 'Thông báo',
+                subTitle: 'Hiện không có dữ liệu',
+                titleTextStyle: const TextStyle(
+                  fontSize: 22,
+                  color: Color(0xff9da9c7),
+                  fontWeight: FontWeight.w500,
+                ),
+                subtitleTextStyle: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xffabb8d6),
+                ),
+              ),
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
          dataBox?.clear();
         },
+        isExtended: isExtended,
         icon: const Icon(Icons.remove),
-        label: const Text("Clear All"),
+        label: const Text("Xóa tất cả"),
       ),
     );
   }
