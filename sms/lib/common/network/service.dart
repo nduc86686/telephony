@@ -15,12 +15,4 @@ abstract class Service {
   Future<HttpResponse<SmsResponse>> sendSms(@Body() SmsRequest smsRequest);
 }
 
-class NameUrl {
-   String NAME_URL = '/api/otp/parseSms';
-   get url=>NAME_URL;
-   void setNameUrl(String? url) {
-    if (url != null) {
-      NAME_URL = url;
-    }
-  }
-}
+

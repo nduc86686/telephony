@@ -31,9 +31,11 @@ class SendRequest {
       }
       String baseUrl=await SharedPref.getString('BASE_URL')??Client.BASE_URL;
       String nameUrl=await SharedPref.getString('NAME_URL')??'/api/otp/parseSms';
+      String token=await SharedPref.getString('TOKEN')??'';
       Client.setUrl(baseUrl);
+      Client.token(token);
 
-      final responses = await Client.configDio().post(nameUrl,data:SmsRequest(message: '${smsRequest.message}') );
+      final responses = await Client.configDio(token: token).post(nameUrl,data:SmsRequest(message: '${smsRequest.message}') );
       SmsResponse sms = SmsResponse.fromJson(responses.data["data"]);
 
       if (sms.error != null) {

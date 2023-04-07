@@ -19,6 +19,7 @@ class _SettingScreenState extends State<SettingScreen> {
   final TextEditingController _baseUrlController = TextEditingController();
 
   final TextEditingController _nameUrlController = TextEditingController();
+  final TextEditingController _tokenController = TextEditingController();
   @override
   void initState() {
     getSharedPref();
@@ -27,9 +28,11 @@ class _SettingScreenState extends State<SettingScreen> {
   getSharedPref()async{
     String baseUrl=await SharedPref.getString('BASE_URL')??Client.BASE_URL;
     String nameUrl=await SharedPref.getString('NAME_URL')??'/api/otp/parseSms';
+    String token=await SharedPref.getString('TOKEN')??'';
     setState(() {
       _baseUrlController.text=baseUrl;
       _nameUrlController.text=nameUrl;
+      _tokenController.text=token;
     });
   }
   @override
@@ -69,6 +72,17 @@ class _SettingScreenState extends State<SettingScreen> {
                 Icon(Icons.wifi_tethering_outlined, color: Theme.of(context).primaryColor),
                 textColor: Colors.black,
               ),
+              CustomTextInput(
+                textEditController: _tokenController,
+                hintTextString: 'Token',
+                inputType: InputType.Default,
+                enableBorder: true,
+                cornerRadius: 48.0,
+                labelText: 'TOKEN',
+                prefixIcon:
+                Icon(Icons.token, color: Theme.of(context).primaryColor),
+                textColor: Colors.black,
+              ),
               const SizedBox(
                 height: 20,
               ),
@@ -76,6 +90,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 onTap: () {
                   SharedPref.putString('BASE_URL', _baseUrlController.text.trim());
                   SharedPref.putString('NAME_URL', _nameUrlController.text.trim());
+                  SharedPref.putString('TOKEN', _tokenController.text.trim());
                   Fluttertoast.showToast(
                       msg: "Lưu thành công",
                       toastLength: Toast.LENGTH_SHORT,
